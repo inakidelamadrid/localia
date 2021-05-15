@@ -1,8 +1,17 @@
 import {AppProps} from 'next/app';
-import '../styles/index.css';
+import Head from 'next/head';
+import '../styles/globals.css';
 
 function MyApp({Component, pageProps}: AppProps) {
-  return <Component {...pageProps} />;
+  return (
+    <>
+      <Head>
+        <title>Compra bueno, compra local</title>
+        <link rel="ico" href="/favicon.ico" />
+      </Head>
+      <Component {...pageProps} />
+    </>
+  );
 }
 
 export default MyApp;
