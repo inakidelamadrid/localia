@@ -1,12 +1,13 @@
 import {FC, ReactNode} from 'react';
 import Link from 'next/link';
+import {useAuth} from 'src/auth/useAuth';
 
 interface LayoutProps {
   main: ReactNode;
 }
 
 export const Layout: FC<LayoutProps> = ({main}) => {
-  const authenticated = false;
+  const {authenticated} = useAuth();
 
   const logout = () => console.log('logging out');
 
