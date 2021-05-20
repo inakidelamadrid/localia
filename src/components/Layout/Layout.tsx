@@ -7,9 +7,7 @@ interface LayoutProps {
 }
 
 export const Layout: FC<LayoutProps> = ({main}) => {
-  const {authenticated} = useAuth();
-
-  const logout = () => console.log('logging out');
+  const {authenticated, logout} = useAuth();
 
   return (
     <div className="bg-gray-900 h-screen max-w-screen-2xl mx-auto text-white">
@@ -21,12 +19,12 @@ export const Layout: FC<LayoutProps> = ({main}) => {
             </li>
             {authenticated && (
               <li>
-                <Link href="/bussiness/add">Add bussiness</Link>
+                <Link href="/bussiness/add">Agrega tu negocio</Link>
               </li>
             )}
           </ul>
           {authenticated ? (
-            <button onClick={logout}>Logout</button>
+            <button onClick={logout}>Cerrar sesion</button>
           ) : (
             <Link href="/auth">Entrar / Crear cuenta</Link>
           )}
