@@ -1,10 +1,15 @@
 import {Layout} from 'src/components/Layout';
 import {GetServerSideProps, NextApiRequest} from 'next';
+import {useRouter} from 'next/router';
 import {loadIdToken} from 'src/auth/firebaseAdmin';
 
 import {PlaceForm} from 'src/components/PlaceForm';
 
-const AddPlace = () => <Layout main={<PlaceForm />} />;
+const AddPlace = () => {
+  const router = useRouter();
+  const handleCancel = () => router.push('/');
+  return <Layout main={<PlaceForm onCancel={handleCancel} />} />;
+};
 
 export default AddPlace;
 

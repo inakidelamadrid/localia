@@ -7,16 +7,23 @@ interface IFormData {
   address: string;
   latitude: number | null;
   longitude: number | null;
+
   image: FileList;
+
   contact: {
-    number: string;
+    name?: string;
+    number?: string;
+    email?: string;
   };
 }
 
-interface IPlaceFormProps {}
+interface IPlaceFormProps {
+  onCancel?: Function;
+}
 
-export const PlaceForm: FC<IPlaceFormProps> = () => {
+export const PlaceForm: FC<IPlaceFormProps> = ({onCancel}) => {
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [previewImage, setPreviewImage] = useState<string>();
   const {
     register,
     handleSubmit,
@@ -42,10 +49,10 @@ export const PlaceForm: FC<IPlaceFormProps> = () => {
 
   return (
     <form
-      className="mx-auto max-w-xl py-4"
+      className="mx-auto max-w-xl py-4 space-y-4"
       onSubmit={handleSubmit(onFormSubmit)}>
       <h1>Agrega tu negocio</h1>
-      <div className="mt-4">
+      <div>
         <label className="block" htmlFor="search">
           Busca la direccion de tu negocio
         </label>
@@ -61,7 +68,75 @@ export const PlaceForm: FC<IPlaceFormProps> = () => {
         {errors.address && <p>{errors.address.message}</p>}
         <h2>{address}</h2>
       </div>
-      <button type="submit" value="Crear" disabled={submitting} />
+
+      <div>
+        <label
+          htmlFor="image"
+          className="p-4 border-dashed border-4 border-gray-600 block cursor-pointer">
+          Haz click para subir la imagen de tu lugar (Razon 16:9)
+        </label>
+        <input
+          id="image"
+          type="file"
+          accept="image/*"
+          className="hidden"
+          {...register('image', {
+            validate: (fileList: FileList) => {
+              if (fileList.length === 1) return true;
+              return 'Please upload one file';
+            },
+          })}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            if (event?.target?.files?.[0]) {
+              const file = event.target.files[0];
+              const reader = new FileReader();
+
+              reader.onloadend = () => {
+                setPreviewImage(reader.result as string);
+              };
+
+              reader.readAsDataURL(file);
+            }
+          }}
+        />
+        {previewImage && (
+          <img
+            src={previewImage}
+            className="mt-4 object-cover"
+            style={{width: '576px', height: `${(9 / 16) * 576}px`}}
+          />
+        )}
+        {errors.image && <p>{errors.image.message}</p>}
+      </div>
+
+      <div>
+        <label className="text-light-pink">Nombre (Contacto)</label>
+        <input {...register('contact.name')} />
+      </div>
+      <div>
+        <label className="text-light-pink">Numero (Contacto)</label>
+        <input {...register('contact.number')} />
+      </div>
+      <div>
+        <label>Email (Contacto)</label>
+        <input {...register('contact.email')} />
+      </div>
+      <div>
+        <button
+          className="bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded"
+          type="submit"
+          disabled={submitting}>
+          Guardar
+        </button>{' '}
+        <a
+          href="#"
+          onClick={(evt: React.MouseEvent<HTMLAnchorElement>) => {
+            evt.preventDefault();
+            onCancel && onCancel();
+          }}>
+          Cancelar
+        </a>
+      </div>
     </form>
   );
 };
