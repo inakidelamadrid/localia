@@ -19,7 +19,7 @@ export const Layout: FC<LayoutProps> = ({main}) => {
             </li>
             {authenticated && (
               <li>
-                <Link href="/bussiness/add">Agrega tu negocio</Link>
+                <Link href="/places/add">Agrega tu negocio</Link>
               </li>
             )}
           </ul>

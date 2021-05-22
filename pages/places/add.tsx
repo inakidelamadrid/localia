@@ -2,11 +2,11 @@ import {Layout} from 'src/components/Layout';
 import {GetServerSideProps, NextApiRequest} from 'next';
 import {loadIdToken} from 'src/auth/firebaseAdmin';
 
-import {HouseForm} from 'src/components/HouseForm';
+import {PlaceForm} from 'src/components/PlaceForm';
 
-const AddHouse = () => <Layout main={<HouseForm />} />;
+const AddPlace = () => <Layout main={<PlaceForm />} />;
 
-export default AddHouse;
+export default AddPlace;
 
 export const getServerSideProps: GetServerSideProps = async ({req, res}) => {
   const uid = await loadIdToken(req as NextApiRequest);

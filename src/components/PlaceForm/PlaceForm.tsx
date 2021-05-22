@@ -13,8 +13,9 @@ interface IFormData {
   };
 }
 
-interface IHouseFormProps {}
-export const HouseForm: FC<IHouseFormProps> = () => {
+interface IPlaceFormProps {}
+
+export const PlaceForm: FC<IPlaceFormProps> = () => {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const {
     register,
