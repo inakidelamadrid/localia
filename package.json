@@ -5,9 +5,15 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "db:init": "yarn prisma init",
+    "db:generate": "yarn prisma generate",
+    "db:migrate:new": "yarn prisma migrate save --experimental",
+    "db:migrate:up": "yarn prisma migrate up --experimental",
+    "db:migrate:down": "yarn prisma migrate down --experimental"
   },
   "dependencies": {
+    "@prisma/client": "~2.11.0",
     "@reach/combobox": "^0.15.1",
     "firebase": "^8.6.1",
     "firebase-admin": "^9.8.0",
@@ -25,6 +31,7 @@
     "@babel/core": "^7.14.2",
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/plugin-proposal-decorators": "^7.12.1",
+    "@prisma/cli": "~2.11.0",
     "@types/js-cookie": "^2.2.6",
     "@types/react": "^17.0.5",
     "autoprefixer": "^10.2.5",
