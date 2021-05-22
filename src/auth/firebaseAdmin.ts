@@ -1,12 +1,11 @@
 import * as admin from 'firebase-admin';
 import {NextApiRequest} from 'next';
 
-const vercelFix = (pvtKey: string): string => pvtKey.replace(/\\n/g, '\n');
+// const vercelFix = (pvtKey: string): string => pvtKey.replace(/\\n/g, '\n');
 
 const verifyIdToken = async (token: string) => {
   const firebasePrivateKey: string = process.env.FIREBASE_PRIVATE_KEY ?? '';
 
-  console.log('PK', firebasePrivateKey);
   if (!admin.apps.length) {
     admin.initializeApp({
       credential: admin.credential.cert({
