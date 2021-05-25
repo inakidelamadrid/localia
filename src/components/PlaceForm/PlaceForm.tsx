@@ -3,6 +3,7 @@ import {useForm} from 'react-hook-form';
 import {useMutation, gql} from '@apollo/client';
 import {SearchBox} from 'src/components/SearchBox';
 import {CreateSignatureMutation} from 'src/generated/CreateSignatureMutation';
+import {objectToFormData} from 'src/utils';
 
 const SIGNATURE_MUTATION = gql`
   mutation CreateSignatureMutation {
@@ -24,12 +25,12 @@ async function uploadImage(
 ): Promise<IUploadImageResponse> {
   const url = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/upload`;
 
-  const formData = new FormData();
-
-  formData.append('file', image);
-  formData.append('signature', signature);
-  formData.append('timestamp', timestamp.toString());
-  formData.append('api_key', process.env.NEXT_PUBLIC_CLOUDINARY_KEY ?? '');
+  const formData = objectToFormData({
+    signature,
+    api_key: process.env.NEXT_PUBLIC_CLOUDINARY_KEY ?? '',
+    file: image,
+    timestamp: timestamp.toString(),
+  });
 
   const response = await fetch(url, {
     method: 'post',
