@@ -1,7 +1,44 @@
 import {FC, useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
-
+import {useMutation, gql} from '@apollo/client';
 import {SearchBox} from 'src/components/SearchBox';
+import {CreateSignatureMutation} from 'src/generated/CreateSignatureMutation';
+import {objectToFormData} from 'src/utils';
+
+const SIGNATURE_MUTATION = gql`
+  mutation CreateSignatureMutation {
+    createImageSignature {
+      signature
+      timestamp
+    }
+  }
+`;
+
+interface IUploadImageResponse {
+  secure_url: string;
+}
+
+async function uploadImage(
+  image: File,
+  signature: string,
+  timestamp: number,
+): Promise<IUploadImageResponse> {
+  const url = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/upload`;
+
+  const formData = objectToFormData({
+    signature,
+    api_key: process.env.NEXT_PUBLIC_CLOUDINARY_KEY ?? '',
+    file: image,
+    timestamp: timestamp.toString(),
+  });
+
+  const response = await fetch(url, {
+    method: 'post',
+    body: formData,
+  });
+
+  return response.json();
+}
 
 interface IFormData {
   address: string;
@@ -36,9 +73,22 @@ export const PlaceForm: FC<IPlaceFormProps> = ({onCancel}) => {
 
   const address = watch('address');
 
+  const [createSignature] = useMutation<CreateSignatureMutation>(
+    SIGNATURE_MUTATION,
+  );
+
+  const handleCreate = async (data: IFormData) => {
+    const {data: signatureData} = await createSignature();
+    if (signatureData) {
+      const {signature, timestamp} = signatureData.createImageSignature;
+      const imageData = await uploadImage(data.image[0], signature, timestamp);
+      console.log('IMAGE DATA', imageData);
+    }
+  };
+
   const onFormSubmit = (data: IFormData) => {
     setSubmitting(true);
-    console.log('Data', data);
+    handleCreate(data);
   };
 
   useEffect(() => {
