@@ -1,127 +1,124 @@
-import {FC, useEffect, useState} from 'react';
-import {useForm} from 'react-hook-form';
-import {useMutation, gql} from '@apollo/client';
-import {SearchBox} from 'src/components/SearchBox';
-import {CreateSignatureMutation} from 'src/generated/CreateSignatureMutation';
-import {objectToFormData} from 'src/utils';
+import { FC, useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useForm } from 'react-hook-form'
+import { useMutation } from '@apollo/client'
 
-const SIGNATURE_MUTATION = gql`
-  mutation CreateSignatureMutation {
-    createImageSignature {
-      signature
-      timestamp
-    }
-  }
-`;
-
-interface IUploadImageResponse {
-  secure_url: string;
-}
-
-async function uploadImage(
-  image: File,
-  signature: string,
-  timestamp: number,
-): Promise<IUploadImageResponse> {
-  const url = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/upload`;
-
-  const formData = objectToFormData({
-    signature,
-    api_key: process.env.NEXT_PUBLIC_CLOUDINARY_KEY ?? '',
-    file: image,
-    timestamp: timestamp.toString(),
-  });
-
-  const response = await fetch(url, {
-    method: 'post',
-    body: formData,
-  });
-
-  return response.json();
-}
+import { CREATE_PLACE_MUTATION } from 'src/places'
+import { SearchBox } from 'src/components/SearchBox'
+import { CreateSignatureMutation } from 'src/generated/CreateSignatureMutation'
+import {
+  CreatePlaceMutation,
+  CreatePlaceMutationVariables,
+} from 'src/generated/CreatePlaceMutation'
+import { SIGNATURE_MUTATION, uploadImage } from 'src/utils/cloudinary'
 
 interface IFormData {
-  address: string;
-  latitude: number | null;
-  longitude: number | null;
+  address: string
+  latitude: number | null
+  longitude: number | null
 
-  image: FileList;
+  image: FileList
 
   contact: {
-    name?: string;
-    number?: string;
-    email?: string;
-  };
+    name?: string
+    number?: string
+    email?: string
+  }
 }
 
 interface IPlaceFormProps {
-  onCancel?: Function;
+  onCancel?: Function
 }
 
-export const PlaceForm: FC<IPlaceFormProps> = ({onCancel}) => {
-  const [submitting, setSubmitting] = useState<boolean>(false);
-  const [previewImage, setPreviewImage] = useState<string>();
+export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel }) => {
+  const router = useRouter()
+  const [submitting, setSubmitting] = useState<boolean>(false)
+  const [previewImage, setPreviewImage] = useState<string>()
   const {
     register,
     handleSubmit,
     setValue,
     watch,
-    formState: {errors},
+    formState: { errors },
   } = useForm<IFormData>({
     defaultValues: {},
-  });
+  })
 
-  const address = watch('address');
+  const address = watch('address')
 
   const [createSignature] = useMutation<CreateSignatureMutation>(
-    SIGNATURE_MUTATION,
-  );
+    SIGNATURE_MUTATION
+  )
 
+  const [createPlace] = useMutation<
+    CreatePlaceMutation,
+    CreatePlaceMutationVariables
+  >(CREATE_PLACE_MUTATION)
+
+  
   const handleCreate = async (data: IFormData) => {
-    const {data: signatureData} = await createSignature();
+    const { data: signatureData } = await createSignature()
+
     if (signatureData) {
-      const {signature, timestamp} = signatureData.createImageSignature;
-      const imageData = await uploadImage(data.image[0], signature, timestamp);
-      console.log('IMAGE DATA', imageData);
+      const { signature, timestamp } = signatureData.createImageSignature
+      const imageData = await uploadImage(data.image[0], signature, timestamp)
+
+      const { data: placeData } = await createPlace({
+        variables: {
+          input: {
+            address: data.address,
+            image: imageData.secure_url,
+            coordinates: {
+              latitude: data.latitude ?? 0,
+              longitude: data.longitude ?? 0,
+            },
+          },
+        },
+      })
+
+      if (placeData?.createPlace) {
+        router.push(`/places/${placeData.createPlace.id}`)
+      }
     }
-  };
+  }
 
   const onFormSubmit = (data: IFormData) => {
-    setSubmitting(true);
-    handleCreate(data);
-  };
+    setSubmitting(true)
+    handleCreate(data)
+  }
 
   useEffect(() => {
-    register('address', {required: 'Please enter your address'});
-    register('latitude', {required: true, min: -90, max: 90});
-    register('longitude', {required: true, min: -180, max: 180});
-  }, [register]);
+    register('address', { required: 'Please enter your address' })
+    register('latitude', { required: true, min: -90, max: 90 })
+    register('longitude', { required: true, min: -180, max: 180 })
+  }, [register])
 
   const imageFormHandlers = register('image', {
     validate: (fileList: FileList) => {
-      if (fileList.length === 1) return true;
-      return 'Please upload one file';
+      if (fileList.length === 1) return true
+      return 'Please upload one file'
     },
-  });
+  })
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const filelist = event?.target?.files;
+    const filelist = event?.target?.files
     if (filelist?.[0]) {
-      const file = filelist[0];
-      imageFormHandlers.onChange(event);
-      const reader = new FileReader();
+      const file = filelist[0]
+      imageFormHandlers.onChange(event)
+      const reader = new FileReader()
       reader.onloadend = () => {
-        setPreviewImage(reader.result as string);
-      };
+        setPreviewImage(reader.result as string)
+      }
 
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(file)
     }
-  };
+  }
 
   return (
     <form
       className="mx-auto max-w-xl py-4 space-y-4"
-      onSubmit={handleSubmit(onFormSubmit)}>
+      onSubmit={handleSubmit(onFormSubmit)}
+    >
       <h1>Agrega tu negocio</h1>
       <div>
         <label className="block" htmlFor="search">
@@ -129,10 +126,10 @@ export const PlaceForm: FC<IPlaceFormProps> = ({onCancel}) => {
         </label>
         <SearchBox
           onSelectAddress={(address, latitude, longitude) => {
-            console.log('Address', address);
-            setValue('address', address);
-            setValue('latitude', latitude);
-            setValue('longitude', longitude);
+            console.log('Address', address)
+            setValue('address', address)
+            setValue('latitude', latitude)
+            setValue('longitude', longitude)
           }}
           defaultValue=""
         />
@@ -144,7 +141,8 @@ export const PlaceForm: FC<IPlaceFormProps> = ({onCancel}) => {
           <div>
             <label
               htmlFor="image"
-              className="p-4 border-dashed border-4 border-gray-600 block cursor-pointer">
+              className="p-4 border-dashed border-4 border-gray-600 block cursor-pointer"
+            >
               Haz click para subir la imagen de tu lugar (Razon 16:9)
             </label>
             <input
@@ -159,7 +157,7 @@ export const PlaceForm: FC<IPlaceFormProps> = ({onCancel}) => {
               <img
                 src={previewImage}
                 className="mt-4 object-cover"
-                style={{width: '576px', height: `${(9 / 16) * 576}px`}}
+                style={{ width: '576px', height: `${(9 / 16) * 576}px` }}
               />
             )}
             {errors.image && <p>{errors.image.message}</p>}
@@ -181,20 +179,22 @@ export const PlaceForm: FC<IPlaceFormProps> = ({onCancel}) => {
             <button
               className="bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded"
               type="submit"
-              disabled={submitting}>
+              disabled={submitting}
+            >
               Guardar
             </button>{' '}
             <a
               href="#"
               onClick={(evt: React.MouseEvent<HTMLAnchorElement>) => {
-                evt.preventDefault();
-                onCancel && onCancel();
-              }}>
+                evt.preventDefault()
+                onCancel && onCancel()
+              }}
+            >
               Cancelar
             </a>
           </div>
         </>
       )}
     </form>
-  );
-};
+  )
+}

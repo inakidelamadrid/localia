@@ -8,6 +8,22 @@
 
 /* Write your own custom component styles here */
 
+@font-face {
+  font-family: 'Syne';
+  src: url('/fonts/Syne/Syne-Regular.woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Syne';
+  src: url('/fonts/Syne/Syne-Bold.woff2');
+  font-style: bold;
+  font-weight: 900;
+  font-display: swap;
+}
+
 /* Start purging... */
 @tailwind utilities;
 /* Stop purging. */
