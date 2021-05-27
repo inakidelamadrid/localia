@@ -6,10 +6,13 @@ module.exports = {
       colors: {
         'light-pink': '#ec5990',
       },
+      fontFamily: {
+        syne: ['Syne'],
+      },
     },
   },
   variants: {
     extend: {},
   },
   plugins: [],
-};
+}
