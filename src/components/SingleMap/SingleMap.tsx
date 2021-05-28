@@ -73,7 +73,8 @@ export const SingleMap: FC<ISingleMapProps> = ({ place, nearby }) => {
               offsetTop={-15}
             >
               <Link href={`/places/${nearbyPlace.id}`}>
-                <a className="bg-blue-400 rounded-full w-4 h-4 cursor-pointer" />
+                <div className="bg-blue-400 rounded-full w-4 h-4 cursor-pointer"/>
+                
               </Link>
             </Marker>
           ))}
