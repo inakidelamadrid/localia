@@ -63,7 +63,7 @@ const ShowPlaceReady: FC<ShowPlaceReadyProps> = ({ id }) => {
             />
           </div>
           <div className="sm:w-full md:w-1/2">
-            <SingleMap place={place} />
+            <SingleMap place={place} nearby={place.nearby} />
           </div>
         </div>
       }
