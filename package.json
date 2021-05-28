@@ -22,6 +22,7 @@
     "apollo-server-micro": "^2.19.0",
     "class-validator": "^0.13.1",
     "cloudinary": "^1.25.1",
+    "cloudinary-react": "^1.7.0",
     "firebase": "^8.6.1",
     "firebase-admin": "^9.8.0",
     "graphql": "^15.4.0",

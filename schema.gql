@@ -36,4 +36,5 @@ input PlaceInput {
 
 type Query {
   hello: String!
+  place(id: String!): Place
 }

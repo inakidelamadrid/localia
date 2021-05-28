@@ -9,64 +9,70 @@ import {
   Mutation,
   Resolver,
   ObjectType,
-} from 'type-graphql'
-import { Max, Min } from 'class-validator'
-import { AuthorizedContext } from './context'
+  Query,
+} from 'type-graphql';
+import { Max, Min } from 'class-validator';
+import { AuthorizedContext, Context } from './context';
 
 @InputType()
 class CoordinatesInput {
   @Min(-90)
   @Max(90)
   @Field((_type) => Float)
-  latitude!: number
+  latitude!: number;
 
   @Min(-180)
   @Max(180)
   @Field((_type) => Float)
-  longitude!: number
+  longitude!: number;
 }
 
 @InputType()
 class PlaceInput {
   @Field((_type) => String)
-  address!: string
+  address!: string;
 
   @Field((_type) => String)
-  image!: string
+  image!: string;
 
   @Field((_type) => CoordinatesInput)
-  coordinates!: CoordinatesInput
+  coordinates!: CoordinatesInput;
 }
 
 @ObjectType()
 class Place {
   @Field((_type) => ID)
-  id!: number
+  id!: number;
 
   @Field((_type) => String)
-  userId!: string
+  userId!: string;
 
   @Field((_type) => Float)
-  latitude!: number
+  latitude!: number;
 
   @Field((_type) => Float)
-  longitude!: number
+  longitude!: number;
 
   @Field((_type) => String)
-  address!: string
+  address!: string;
 
   @Field((_type) => String)
-  image!: string
+  image!: string;
 
   @Field((_type) => String)
   publicId(): string {
-    const parts = this.image.split('/')
-    return parts[parts.length - 1]
+    const parts = this.image.split('/');
+    return parts[parts.length - 1];
   }
 }
 
 @Resolver()
 export class PlaceResolver {
+  @Query((_returns) => Place, { nullable: true })
+  async place(@Arg('id') id: string, @Ctx() ctx: Context) {
+    return ctx.prisma.place.findOne({ where: { id: parseInt(id) } });
+  }
+
   @Authorized()
   @Mutation((_returns) => Place, { nullable: true })
   async createPlace(
@@ -77,9 +83,9 @@ export class PlaceResolver {
       image,
       address,
       coordinates: { longitude, latitude },
-    } = input
+    } = input;
     return ctx.prisma.place.create({
       data: { image, address, longitude, latitude, userId: ctx.uid },
-    })
+    });
   }
 }
