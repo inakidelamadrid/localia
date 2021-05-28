@@ -7,10 +7,13 @@ import { Image } from 'cloudinary-react';
 import { SHOW_PLACE_QUERY } from 'src/places';
 
 import { Layout } from 'src/components/Layout';
+import { SingleMap } from 'src/components/SingleMap';
+
 import {
   ShowPlaceQuery,
   ShowPlaceQueryVariables,
 } from 'src/generated/ShowPlaceQuery';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 const ShowPlace: NextPage = () => {
   const {
@@ -59,7 +62,9 @@ const ShowPlaceReady: FC<ShowPlaceReadyProps> = ({ id }) => {
               gravity="auto"
             />
           </div>
-          <div className="sm:w-full md:w-1/2">SingleMap</div>
+          <div className="sm:w-full md:w-1/2">
+            <SingleMap place={place} />
+          </div>
         </div>
       }
     />
