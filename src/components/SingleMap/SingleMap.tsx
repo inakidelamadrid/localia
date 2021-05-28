@@ -10,6 +10,7 @@ interface IPlace {
   id: string;
   latitude: number;
   longitude: number;
+  nearby: IPlace[];
 }
 
 interface ISingleMapProps {
