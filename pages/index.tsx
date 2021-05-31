@@ -1,5 +1,6 @@
-import { Layout } from 'src/components/Layout'
-import { Map } from 'src/components/Map'
+import { Layout } from 'src/components/Layout';
+import { Map } from 'src/components/Map';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 const Home = () => (
   <Layout
@@ -17,6 +18,6 @@ const Home = () => (
       </div>
     }
   />
-)
+);
 
-export default Home
+export default Home;
