@@ -3,7 +3,7 @@ import { FC } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useQuery } from '@apollo/client';
-import { Image } from 'cloudinary-react';
+import { Image } from 'src/components/Image';
 import { SHOW_PLACE_QUERY } from 'src/places';
 
 import { Layout } from 'src/components/Layout';
@@ -50,16 +50,9 @@ const ShowPlaceReady: FC<ShowPlaceReadyProps> = ({ id }) => {
 
             <Image
               className="pb-2"
-              cloudName={process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
               publicId={place.publicId}
               alt={place.address}
-              secure
-              dpr="auto"
-              quality="auto"
               width={900}
-              height={Math.floor((9 / 16) * 900)}
-              crop="fill"
-              gravity="auto"
             />
           </div>
           <div className="sm:w-full md:w-1/2">

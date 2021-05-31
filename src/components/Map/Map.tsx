@@ -1,6 +1,6 @@
 import { FC, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Image } from 'cloudinary-react';
+import { Image } from 'src/components/Image';
 import ReactMapGL, { Marker, Popup, ViewportProps } from 'react-map-gl';
 // import { useLocalState } from 'src/hooks/useLocalState';
 import { PlacesQuery_places } from 'src/generated/PlacesQuery';
@@ -19,7 +19,7 @@ export const Map: FC<IProps> = ({ places, setDataBounds }) => {
 
   const [viewport, setViewport] = useState<ViewportProps>({
     latitude: 19.24,
-    longitude: -103.70,
+    longitude: -103.7,
     zoom: 12,
   });
 
@@ -41,7 +41,6 @@ export const Map: FC<IProps> = ({ places, setDataBounds }) => {
     }
   };
 
-  console.log('Viewport', viewport);
   return (
     <div className="text-black relative">
       <ReactMapGL
@@ -83,16 +82,9 @@ export const Map: FC<IProps> = ({ places, setDataBounds }) => {
             <div className="text-center">
               <h3 className="px-4">{selectedPlace.address.substr(0, 30)}</h3>
               <Image
-                className="mx-auto my-4"
-                cloudName={process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
                 publicId={selectedPlace.publicId}
-                secure
-                dpr="auto"
-                quality="auto"
+                className="mx-auto my-4"
                 width={200}
-                height={Math.floor((9 / 16) * 200)}
-                crop="fill"
-                gravity="auto"
               />
               <Link href={`/places/${selectedPlace.id}`}>
                 <a>Ver</a>
