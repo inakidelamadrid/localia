@@ -13683,6 +13683,11 @@ use-composed-ref@^1.0.0:
   dependencies:
     ts-essentials "^2.0.3"
 
+use-debounce@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/use-debounce/-/use-debounce-6.0.1.tgz#ed1eb2b30189408fb9792ea2887f4c6c3cb401a3"
+  integrity sha512-kpvIxpa0vOLz/2I2sfNJ72mUeaT2CMNCu5BT1f2HkV9qZK27UVSOFf1sSSu+wjJE4TcR2VTXS2SM569+m3TN7Q==
+
 use-google-maps-script@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/use-google-maps-script/-/use-google-maps-script-0.1.2.tgz#f0677565f07f6032c1777f83c5e2dbca32bd8cdf"

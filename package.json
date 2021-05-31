@@ -36,6 +36,7 @@
     "react-map-gl": "^5.2.10",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.1.1",
+    "use-debounce": "^6.0.1",
     "use-google-maps-script": "^0.1.2",
     "use-places-autocomplete": "^1.9.3"
   },
