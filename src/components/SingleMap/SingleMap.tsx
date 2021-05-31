@@ -4,18 +4,21 @@ import ReactMapGL, {
   NavigationControl,
   Marker,
 } from 'react-map-gl';
+import Link from 'next/link';
 
 interface IPlace {
   id: string;
   latitude: number;
   longitude: number;
+  nearby: IPlace[];
 }
 
 interface ISingleMapProps {
   place: IPlace;
+  nearby: IPlace[];
 }
 
-export const SingleMap: FC<ISingleMapProps> = ({ place }) => {
+export const SingleMap: FC<ISingleMapProps> = ({ place, nearby }) => {
   const { latitude, longitude, id } = place;
 
   const [viewport, setViewport] = useState<ViewportProps>({
@@ -35,19 +38,46 @@ export const SingleMap: FC<ISingleMapProps> = ({ place }) => {
     width: '100%',
   };
 
+  const buildMarker = ({
+    latitude,
+    longitude,
+    bgColor = 'bg-green-500',
+  }: {
+    bgColor?: string;
+    latitude: number;
+    longitude: number;
+  }) => (
+    <Marker
+      latitude={latitude}
+      longitude={longitude}
+      offsetLeft={-15}
+      offsetTop={-15}
+    >
+      <div className={`${bgColor} rounded-full w-4 h-4`}></div>
+    </Marker>
+  );
+
   return (
     <div className="text-black w-full h-full">
       <ReactMapGL {...mapConfig}>
         <div className="absolute top-0 left-0 p-4">
           <NavigationControl showCompass={false} />
-          <Marker
-            latitude={latitude}
-            longitude={longitude}
-            offsetLeft={-15}
-            offsetTop={-15}
-          >
-            <div className="bg-green-500 rounded-full w-4 h-4"></div>
-          </Marker>
+          {buildMarker({ latitude, longitude })}
+
+          {place.nearby.map((nearbyPlace: IPlace) => (
+            <Marker
+              key={nearbyPlace.id}
+              latitude={nearbyPlace.latitude}
+              longitude={nearbyPlace.longitude}
+              offsetLeft={-15}
+              offsetTop={-15}
+            >
+              <Link href={`/places/${nearbyPlace.id}`}>
+                <div className="bg-blue-400 rounded-full w-4 h-4 cursor-pointer"/>
+                
+              </Link>
+            </Marker>
+          ))}
         </div>
       </ReactMapGL>
     </div>

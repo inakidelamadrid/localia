@@ -7,6 +7,13 @@
 // GraphQL query operation: ShowPlaceQuery
 // ====================================================
 
+export interface ShowPlaceQuery_place_nearby {
+  __typename: "Place";
+  id: string;
+  latitude: number;
+  longitude: number;
+}
+
 export interface ShowPlaceQuery_place {
   __typename: "Place";
   id: string;
@@ -15,6 +22,7 @@ export interface ShowPlaceQuery_place {
   publicId: string;
   latitude: number;
   longitude: number;
+  nearby: ShowPlaceQuery_place_nearby[];
 }
 
 export interface ShowPlaceQuery {
