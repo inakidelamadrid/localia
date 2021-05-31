@@ -49,7 +49,6 @@ const Home = () => {
     }
   );
   const lastData = useLastData(data);
-  console.log('Data', lastData);
   return (
     <Layout
       main={
@@ -61,7 +60,10 @@ const Home = () => {
             Places
           </div>
           <div className="w-1/2 p-4">
-            <Map setDataBounds={setDataBounds} />
+            <Map
+              setDataBounds={setDataBounds}
+              places={lastData ? lastData.places : []}
+            />
           </div>
         </div>
       }
