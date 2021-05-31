@@ -29,6 +29,15 @@ class CoordinatesInput {
 }
 
 @InputType()
+class BoundsInput {
+  @Field((_type) => CoordinatesInput)
+  sw!: CoordinatesInput;
+
+  @Field((_type) => CoordinatesInput)
+  ne!: CoordinatesInput;
+}
+
+@InputType()
 class PlaceInput {
   @Field((_type) => String)
   address!: string;
@@ -89,6 +98,17 @@ export class PlaceResolver {
   @Query((_returns) => Place, { nullable: true })
   async place(@Arg('id') id: string, @Ctx() ctx: Context) {
     return ctx.prisma.place.findOne({ where: { id: parseInt(id) } });
+  }
+
+  @Query((_returns) => [Place], { nullable: false })
+  async places(@Arg('bounds') bounds: BoundsInput, @Ctx() ctx: Context) {
+    return ctx.prisma.place.findMany({
+      where: {
+        latitude: { gte: bounds.sw.latitude, lte: bounds.ne.latitude },
+        longitude: { gte: bounds.sw.longitude, lte: bounds.ne.longitude },
+      },
+      take: 50,
+    });
   }
 
   @Authorized()
