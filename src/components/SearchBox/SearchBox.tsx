@@ -1,10 +1,11 @@
-import {ChangeEvent} from 'react';
-import {FunctionComponent} from 'react';
+import { ChangeEvent } from 'react';
+import { FunctionComponent } from 'react';
 import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
 } from 'use-places-autocomplete';
-import {useGoogleMapsScript, Libraries} from 'use-google-maps-script';
+import { useGoogleMapsScript, Libraries } from 'use-google-maps-script';
+
 import {
   Combobox,
   ComboboxInput,
@@ -18,7 +19,7 @@ interface ISearchBoxProps {
   onSelectAddress: (
     address: string,
     latitude: number | null,
-    longitude: number | null,
+    longitude: number | null
   ) => void;
   defaultValue: string;
 }
@@ -29,7 +30,7 @@ export const SearchBox: FunctionComponent<ISearchBoxProps> = ({
   onSelectAddress,
   defaultValue,
 }) => {
-  const {isLoaded, loadError} = useGoogleMapsScript({
+  const { isLoaded, loadError } = useGoogleMapsScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? '',
     libraries,
   });
@@ -45,14 +46,14 @@ export const SearchBox: FunctionComponent<ISearchBoxProps> = ({
   );
 };
 
-function ReadySearchBox({onSelectAddress, defaultValue}: ISearchBoxProps) {
+function ReadySearchBox({ onSelectAddress, defaultValue }: ISearchBoxProps) {
   const {
     ready,
     value,
     setValue,
-    suggestions: {status, data},
+    suggestions: { status, data },
     clearSuggestions,
-  } = usePlacesAutocomplete({debounce: 300, defaultValue});
+  } = usePlacesAutocomplete({ debounce: 300, defaultValue });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
@@ -66,13 +67,20 @@ function ReadySearchBox({onSelectAddress, defaultValue}: ISearchBoxProps) {
     clearSuggestions();
 
     try {
-      const results = await getGeocode({address});
-      const {lat, lng} = await getLatLng(results[0]);
+      const results = await getGeocode({ address });
+      const { lat, lng } = await getLatLng(results[0]);
       onSelectAddress(address, lat, lng);
     } catch (error) {
       console.error(`😱 Error:`, error);
     }
   };
+
+  const options = data.map(
+    ({ place_id, description }: { place_id: string; description: string }) => ({
+      value: place_id,
+      label: description,
+    })
+  );
 
   return (
     <Combobox onSelect={handleSelect}>
@@ -82,10 +90,10 @@ function ReadySearchBox({onSelectAddress, defaultValue}: ISearchBoxProps) {
         onChange={handleChange}
         disabled={!ready}
         placeholder="Search your location"
-        className="w-full p-2"
+        className="w-full p-2 outline-none"
         autoComplete="off"
       />
-      <ComboboxPopover>
+      <ComboboxPopover className="mt-2 rounded-lg">
         <ComboboxList>
           {status === 'OK' &&
             data.map(
@@ -95,7 +103,13 @@ function ReadySearchBox({onSelectAddress, defaultValue}: ISearchBoxProps) {
               }: {
                 place_id: string;
                 description: string;
-              }) => <ComboboxOption key={place_id} value={description} />,
+              }) => (
+                <ComboboxOption
+                  key={place_id}
+                  value={description}
+                  className="text-green-600"
+                />
+              )
             )}
         </ComboboxList>
       </ComboboxPopover>
