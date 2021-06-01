@@ -4,6 +4,7 @@ import { Layout } from 'src/components/Layout';
 import { Map } from 'src/components/Map';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
+import { PlaceList } from 'src/components/PlaceList';
 import { useLocalState } from 'src/hooks/useLocalState';
 import { useLastData } from 'src/hooks/useLastData';
 import { PlacesQuery, PlacesQueryVariables } from 'src/generated/PlacesQuery';
@@ -21,6 +22,7 @@ const PLACES_QUERY = gql`
 `;
 
 type BoundsArray = [[number, number], [number, number]];
+
 const parseBounds = (boundsString: string) => {
   const bounds = JSON.parse(boundsString) as BoundsArray;
   return {
@@ -57,7 +59,7 @@ const Home = () => {
             className="w-1/2 p-4 overflow-y-scroll"
             style={{ maxHeight: 'calc(100vh - 4rem)' }}
           >
-            Places
+            <PlaceList places={lastData?.places || []} />
           </div>
           <div className="w-1/2 p-4">
             <Map
