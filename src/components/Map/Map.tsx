@@ -6,11 +6,16 @@ import ReactMapGL, { Marker, Popup, ViewportProps } from 'react-map-gl';
 import { PlacesQuery_places } from 'src/generated/PlacesQuery';
 
 interface IProps {
+  highlightedPlaceId: string | null;
   setDataBounds: (bounds: string) => void;
   places: PlacesQuery_places[];
 }
 
-export const Map: FC<IProps> = ({ places, setDataBounds }) => {
+export const Map: FC<IProps> = ({
+  highlightedPlaceId,
+  places,
+  setDataBounds,
+}) => {
   const [selectedPlace, setSelectedPlace] = useState<PlacesQuery_places | null>(
     null
   );
@@ -68,7 +73,9 @@ export const Map: FC<IProps> = ({ places, setDataBounds }) => {
           >
             <div
               onClick={() => setSelectedPlace(place)}
-              className="bg-blue-400 rounded-full w-4 h-4 cursor-pointer"
+              className={`${
+                highlightedPlaceId === place.id ? 'bg-pink-800' : 'bg-blue-400'
+              } rounded-full w-4 h-4 cursor-pointer`}
             />
           </Marker>
         ))}

@@ -3,15 +3,20 @@ import { Image } from 'src/components/Image';
 import { PlacesQuery_places } from 'src/generated/PlacesQuery';
 
 interface IProps {
+  setHighlightedPlaceId: (place_id: string | null) => void;
   places: PlacesQuery_places[];
 }
 
-export function PlaceList({ places }: IProps) {
+export function PlaceList({ places, setHighlightedPlaceId }: IProps) {
   return (
     <>
-      {places.map((place) => (
+      {places.map((place: PlacesQuery_places) => (
         <Link key={place.id} href={`/houses/${place.id}`}>
-          <div className="px-6 pt-4 cursor-pointer flex flex-wrap">
+          <div
+            className="px-6 pt-4 cursor-pointer flex flex-wrap"
+            onMouseEnter={() => setHighlightedPlaceId(place.id)}
+            onMouseLeave={() => setHighlightedPlaceId(null)}
+          >
             <div className="sm:w-full md:w-1/2">
               <Image
                 publicId={place.publicId}

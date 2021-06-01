@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { useDebounce } from 'use-debounce';
 import { Layout } from 'src/components/Layout';
@@ -8,6 +9,7 @@ import { PlaceList } from 'src/components/PlaceList';
 import { useLocalState } from 'src/hooks/useLocalState';
 import { useLastData } from 'src/hooks/useLastData';
 import { PlacesQuery, PlacesQueryVariables } from 'src/generated/PlacesQuery';
+import { parseBounds } from 'src/utils/mapbox';
 
 const PLACES_QUERY = gql`
   query PlacesQuery($bounds: BoundsInput!) {
@@ -21,26 +23,16 @@ const PLACES_QUERY = gql`
   }
 `;
 
-type BoundsArray = [[number, number], [number, number]];
-
-const parseBounds = (boundsString: string) => {
-  const bounds = JSON.parse(boundsString) as BoundsArray;
-  return {
-    sw: {
-      latitude: bounds[0][1],
-      longitude: bounds[0][0],
-    },
-    ne: {
-      latitude: bounds[1][1],
-      longitude: bounds[1][0],
-    },
-  };
-};
 const Home = () => {
+  const [highlightedPlaceId, setHighlightedPlaceId] = useState<string | null>(
+    null
+  );
+
   const [dataBounds, setDataBounds] = useLocalState<string>(
     'HomePage/Map/dataBounds',
     '[[0,0], [0,0]]'
   );
+
   const [debouncedDataBounds] = useDebounce(dataBounds, 200);
   const { data, error } = useQuery<PlacesQuery, PlacesQueryVariables>(
     PLACES_QUERY,
@@ -59,10 +51,14 @@ const Home = () => {
             className="w-1/2 p-4 overflow-y-scroll"
             style={{ maxHeight: 'calc(100vh - 4rem)' }}
           >
-            <PlaceList places={lastData?.places || []} />
+            <PlaceList
+              places={lastData?.places || []}
+              setHighlightedPlaceId={setHighlightedPlaceId}
+            />
           </div>
           <div className="w-1/2 p-4">
             <Map
+              highlightedPlaceId={highlightedPlaceId}
               setDataBounds={setDataBounds}
               places={lastData ? lastData.places : []}
             />

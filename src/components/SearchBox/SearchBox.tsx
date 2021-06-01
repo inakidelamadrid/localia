@@ -15,6 +15,11 @@ import {
 } from '@reach/combobox';
 import '@reach/combobox/styles.css';
 
+interface PlaceSuggestion {
+  place_id: string;
+  description: string;
+}
+
 interface ISearchBoxProps {
   onSelectAddress: (
     address: string,
@@ -75,13 +80,6 @@ function ReadySearchBox({ onSelectAddress, defaultValue }: ISearchBoxProps) {
     }
   };
 
-  const options = data.map(
-    ({ place_id, description }: { place_id: string; description: string }) => ({
-      value: place_id,
-      label: description,
-    })
-  );
-
   return (
     <Combobox onSelect={handleSelect}>
       <ComboboxInput
@@ -96,21 +94,13 @@ function ReadySearchBox({ onSelectAddress, defaultValue }: ISearchBoxProps) {
       <ComboboxPopover className="mt-2 rounded-lg">
         <ComboboxList>
           {status === 'OK' &&
-            data.map(
-              ({
-                place_id,
-                description,
-              }: {
-                place_id: string;
-                description: string;
-              }) => (
-                <ComboboxOption
-                  key={place_id}
-                  value={description}
-                  className="text-green-600"
-                />
-              )
-            )}
+            data.map(({ place_id, description }: PlaceSuggestion) => (
+              <ComboboxOption
+                key={place_id}
+                value={description}
+                className="text-green-600"
+              />
+            ))}
         </ComboboxList>
       </ComboboxPopover>
     </Combobox>
