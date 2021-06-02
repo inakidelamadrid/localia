@@ -22,6 +22,7 @@ export interface ShowPlaceQuery_place {
   publicId: string;
   latitude: number;
   longitude: number;
+  name: string;
   nearby: ShowPlaceQuery_place_nearby[];
 }
 

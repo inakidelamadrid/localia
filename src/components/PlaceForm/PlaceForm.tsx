@@ -1,39 +1,39 @@
-import { FC, useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
-import { useForm } from 'react-hook-form'
-import { useMutation } from '@apollo/client'
+import { FC, useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useForm } from 'react-hook-form';
+import { useMutation } from '@apollo/client';
 
-import { CREATE_PLACE_MUTATION } from 'src/places'
-import { SearchBox } from 'src/components/SearchBox'
-import { CreateSignatureMutation } from 'src/generated/CreateSignatureMutation'
+import { CREATE_PLACE_MUTATION } from 'src/places';
+import { SearchBox } from 'src/components/SearchBox';
+import { CreateSignatureMutation } from 'src/generated/CreateSignatureMutation';
 import {
   CreatePlaceMutation,
   CreatePlaceMutationVariables,
-} from 'src/generated/CreatePlaceMutation'
-import { SIGNATURE_MUTATION, uploadImage } from 'src/utils/cloudinary'
+} from 'src/generated/CreatePlaceMutation';
+import { SIGNATURE_MUTATION, uploadImage } from 'src/utils/cloudinary';
 
 interface IFormData {
-  address: string
-  latitude: number | null
-  longitude: number | null
+  address: string;
+  latitude: number | null;
+  longitude: number | null;
 
-  image: FileList
+  image: FileList;
 
   contact: {
-    name?: string
-    number?: string
-    email?: string
-  }
+    name?: string;
+    number?: string;
+    email?: string;
+  };
 }
 
 interface IPlaceFormProps {
-  onCancel?: Function
+  onCancel?: Function;
 }
 
 export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel }) => {
-  const router = useRouter()
-  const [submitting, setSubmitting] = useState<boolean>(false)
-  const [previewImage, setPreviewImage] = useState<string>()
+  const router = useRouter();
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [previewImage, setPreviewImage] = useState<string>();
   const {
     register,
     handleSubmit,
@@ -42,30 +42,30 @@ export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel }) => {
     formState: { errors },
   } = useForm<IFormData>({
     defaultValues: {},
-  })
+  });
 
-  const address = watch('address')
+  const address = watch('address');
 
   const [createSignature] = useMutation<CreateSignatureMutation>(
     SIGNATURE_MUTATION
-  )
+  );
 
   const [createPlace] = useMutation<
     CreatePlaceMutation,
     CreatePlaceMutationVariables
-  >(CREATE_PLACE_MUTATION)
+  >(CREATE_PLACE_MUTATION);
 
-  
   const handleCreate = async (data: IFormData) => {
-    const { data: signatureData } = await createSignature()
+    const { data: signatureData } = await createSignature();
 
     if (signatureData) {
-      const { signature, timestamp } = signatureData.createImageSignature
-      const imageData = await uploadImage(data.image[0], signature, timestamp)
+      const { signature, timestamp } = signatureData.createImageSignature;
+      const imageData = await uploadImage(data.image[0], signature, timestamp);
 
       const { data: placeData } = await createPlace({
         variables: {
           input: {
+            name: 'TEST NAME',
             address: data.address,
             image: imageData.secure_url,
             coordinates: {
@@ -74,45 +74,45 @@ export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel }) => {
             },
           },
         },
-      })
+      });
 
       if (placeData?.createPlace) {
-        router.push(`/places/${placeData.createPlace.id}`)
+        router.push(`/places/${placeData.createPlace.id}`);
       }
     }
-  }
+  };
 
   const onFormSubmit = (data: IFormData) => {
-    setSubmitting(true)
-    handleCreate(data)
-  }
+    setSubmitting(true);
+    handleCreate(data);
+  };
 
   useEffect(() => {
-    register('address', { required: 'Please enter your address' })
-    register('latitude', { required: true, min: -90, max: 90 })
-    register('longitude', { required: true, min: -180, max: 180 })
-  }, [register])
+    register('address', { required: 'Please enter your address' });
+    register('latitude', { required: true, min: -90, max: 90 });
+    register('longitude', { required: true, min: -180, max: 180 });
+  }, [register]);
 
   const imageFormHandlers = register('image', {
     validate: (fileList: FileList) => {
-      if (fileList.length === 1) return true
-      return 'Please upload one file'
+      if (fileList.length === 1) return true;
+      return 'Please upload one file';
     },
-  })
+  });
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const filelist = event?.target?.files
+    const filelist = event?.target?.files;
     if (filelist?.[0]) {
-      const file = filelist[0]
-      imageFormHandlers.onChange(event)
-      const reader = new FileReader()
+      const file = filelist[0];
+      imageFormHandlers.onChange(event);
+      const reader = new FileReader();
       reader.onloadend = () => {
-        setPreviewImage(reader.result as string)
-      }
+        setPreviewImage(reader.result as string);
+      };
 
-      reader.readAsDataURL(file)
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
   return (
     <form
@@ -126,10 +126,10 @@ export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel }) => {
         </label>
         <SearchBox
           onSelectAddress={(address, latitude, longitude) => {
-            console.log('Address', address)
-            setValue('address', address)
-            setValue('latitude', latitude)
-            setValue('longitude', longitude)
+            console.log('Address', address);
+            setValue('address', address);
+            setValue('latitude', latitude);
+            setValue('longitude', longitude);
           }}
           defaultValue=""
         />
@@ -186,8 +186,8 @@ export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel }) => {
             <a
               href="#"
               onClick={(evt: React.MouseEvent<HTMLAnchorElement>) => {
-                evt.preventDefault()
-                onCancel && onCancel()
+                evt.preventDefault();
+                onCancel && onCancel();
               }}
             >
               Cancelar
@@ -196,5 +196,5 @@ export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel }) => {
         </>
       )}
     </form>
-  )
-}
+  );
+};

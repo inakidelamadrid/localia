@@ -21,6 +21,7 @@ export interface PlaceInput {
   address: string;
   coordinates: CoordinatesInput;
   image: string;
+  name: string;
 }
 
 //==============================================================

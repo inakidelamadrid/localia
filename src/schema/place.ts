@@ -47,6 +47,9 @@ class PlaceInput {
 
   @Field((_type) => CoordinatesInput)
   coordinates!: CoordinatesInput;
+
+  @Field((_type) => String)
+  name!: string;
 }
 
 @ObjectType()
@@ -74,6 +77,9 @@ class Place {
     const parts = this.image.split('/');
     return parts[parts.length - 1];
   }
+
+  @Field((_type) => String)
+  name!: string;
 
   @Field((_type) => [Place])
   async nearby(@Ctx() ctx: Context) {
@@ -121,9 +127,34 @@ export class PlaceResolver {
       image,
       address,
       coordinates: { longitude, latitude },
+      name,
     } = input;
     return ctx.prisma.place.create({
-      data: { image, address, longitude, latitude, userId: ctx.uid },
+      data: { image, address, longitude, latitude, userId: ctx.uid, name },
+    });
+  }
+
+  @Authorized()
+  @Mutation((_returns) => Place, { nullable: true })
+  async updatePlace(
+    @Arg('id') id: string,
+    @Arg('input') input: PlaceInput,
+    @Ctx() ctx: AuthorizedContext
+  ) {
+    const placeId = parseInt(id, 10);
+    const place = await ctx.prisma.place.findOne({ where: { id: placeId } });
+
+    if (!place || place.userId !== ctx.uid) return null;
+
+    return await ctx.prisma.place.update({
+      where: { id: placeId },
+      data: {
+        image: input.image,
+        address: input.address,
+        latitude: input.coordinates.latitude,
+        longitude: input.coordinates.longitude,
+        name: input.name,
+      },
     });
   }
 }

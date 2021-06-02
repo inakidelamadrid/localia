@@ -9,6 +9,7 @@ export const SHOW_PLACE_QUERY = gql`
       publicId
       latitude
       longitude
+      name
       nearby {
         id
         latitude
