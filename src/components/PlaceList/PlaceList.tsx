@@ -11,7 +11,7 @@ export function PlaceList({ places, setHighlightedPlaceId }: IProps) {
   return (
     <>
       {places.map((place: PlacesQuery_places) => (
-        <Link key={place.id} href={`/houses/${place.id}`}>
+        <Link key={place.id} href={`/places/${place.id}`}>
           <div
             className="px-6 pt-4 cursor-pointer flex flex-wrap"
             onMouseEnter={() => setHighlightedPlaceId(place.id)}

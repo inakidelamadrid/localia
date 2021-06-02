@@ -103,12 +103,12 @@ export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel, place }) => {
         id: currentPlace.id,
         input: {
           address: data.address,
+          name: data.name,
           image: image,
           coordinates: {
             latitude: data.latitude ?? 0,
             longitude: data.longitude ?? 0,
           },
-          name: data.address,
         },
       },
     });
