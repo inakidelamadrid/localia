@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useQuery, gql } from '@apollo/client';
 import { loadIdToken } from 'src/auth/firebaseAdmin';
 import { Layout } from 'src/components/Layout';
-// import HouseForm from "src/components/houseForm";
+import { PlaceForm } from 'src/components/PlaceForm';
 import { useAuth } from 'src/auth/useAuth';
 import {
   EditPlaceQuery,
@@ -14,6 +14,7 @@ const EDIT_PLACE_QUERY = gql`
   query EditPlaceQuery($id: String!) {
     place(id: $id) {
       id
+      name
       userId
       address
       image
@@ -47,7 +48,7 @@ function PlaceData({ id }: { id: string }) {
   if (user.uid !== data?.place?.userId)
     return <Layout main={<div>You don't have permission</div>} />;
 
-  return <Layout main={<h1>YESSS</h1>} />;
+  return <Layout main={<PlaceForm place={data.place} />} />;
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {

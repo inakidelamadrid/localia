@@ -10,6 +10,7 @@
 export interface EditPlaceQuery_place {
   __typename: "Place";
   id: string;
+  name: string;
   userId: string;
   address: string;
   image: string;
