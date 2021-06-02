@@ -6,6 +6,7 @@ import { useQuery } from '@apollo/client';
 import { Image } from 'src/components/Image';
 import { SHOW_PLACE_QUERY } from 'src/places';
 
+import { PlaceNav } from 'src/components/PlaceNav';
 import { Layout } from 'src/components/Layout';
 import { SingleMap } from 'src/components/SingleMap';
 
@@ -46,6 +47,7 @@ const ShowPlaceReady: FC<ShowPlaceReadyProps> = ({ id }) => {
       main={
         <div className="sm:block md:flex">
           <div className="sm:w-full md:w-1/2 p-4">
+            <PlaceNav place={place} />
             <h1 className="text-3xl my-2">{place.address}</h1>
 
             <Image
