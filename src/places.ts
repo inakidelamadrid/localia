@@ -26,3 +26,17 @@ export const CREATE_PLACE_MUTATION = gql`
     }
   }
 `;
+
+export const UPDATE_PLACE_MUTATION = gql`
+  mutation UpdatePlaceMutation($id: String!, $input: PlaceInput!) {
+    updatePlace(id: $id, input: $input) {
+      id
+      image
+      publicId
+      latitude
+      longitude
+      name
+      address
+    }
+  }
+`;

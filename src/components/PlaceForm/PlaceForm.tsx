@@ -2,8 +2,9 @@ import { FC, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@apollo/client';
+import pick from 'lodash/pick';
 
-import { CREATE_PLACE_MUTATION } from 'src/places';
+import { CREATE_PLACE_MUTATION, UPDATE_PLACE_MUTATION } from 'src/places';
 import { SearchBox } from 'src/components/SearchBox';
 import { CreateSignatureMutation } from 'src/generated/CreateSignatureMutation';
 import {
@@ -14,6 +15,7 @@ import { SIGNATURE_MUTATION, uploadImage } from 'src/utils/cloudinary';
 
 interface IFormData {
   address: string;
+  name: string;
   latitude: number | null;
   longitude: number | null;
 
@@ -26,11 +28,23 @@ interface IFormData {
   };
 }
 
-interface IPlaceFormProps {
-  onCancel?: Function;
+interface IPlace {
+  id: string;
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  image: string;
+  publicId: string;
 }
 
-export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel }) => {
+interface IPlaceFormProps {
+  onCancel?: Function;
+  place?: IPlace;
+}
+
+export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel, place }) => {
+  console.log('Place', place);
   const router = useRouter();
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [previewImage, setPreviewImage] = useState<string>();
@@ -41,7 +55,9 @@ export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel }) => {
     watch,
     formState: { errors },
   } = useForm<IFormData>({
-    defaultValues: {},
+    defaultValues: place
+      ? { ...pick(place, ['address', 'latitude', 'longitude', 'name']) }
+      : {},
   });
 
   const address = watch('address');
@@ -126,7 +142,6 @@ export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel }) => {
         </label>
         <SearchBox
           onSelectAddress={(address, latitude, longitude) => {
-            console.log('Address', address);
             setValue('address', address);
             setValue('latitude', latitude);
             setValue('longitude', longitude);
@@ -164,16 +179,8 @@ export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel }) => {
           </div>
 
           <div>
-            <label className="text-light-pink">Nombre (Contacto)</label>
-            <input {...register('contact.name')} />
-          </div>
-          <div>
-            <label className="text-light-pink">Numero (Contacto)</label>
-            <input {...register('contact.number')} />
-          </div>
-          <div>
-            <label>Email (Contacto)</label>
-            <input {...register('contact.email')} />
+            <label className="text-light-pink">Nombre</label>
+            <input {...register('name')} />
           </div>
           <div>
             <button
