@@ -40,3 +40,9 @@ export const UPDATE_PLACE_MUTATION = gql`
     }
   }
 `;
+
+export const DELETE_PLACE_MUTATION = gql`
+  mutation DeletePlace($id: String!) {
+    deletePlace(id: $id)
+  }
+`;

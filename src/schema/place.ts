@@ -157,4 +157,21 @@ export class PlaceResolver {
       },
     });
   }
+
+  @Authorized()
+  @Mutation((_returns) => Boolean, { nullable: false })
+  async deletePlace(
+    @Arg('id') id: string,
+    @Ctx() ctx: AuthorizedContext
+  ): Promise<boolean> {
+    const placeId = parseInt(id, 10);
+    const place = await ctx.prisma.place.findOne({ where: { id: placeId } });
+
+    if (!place || place.userId !== ctx.uid) return false;
+
+    await ctx.prisma.place.delete({
+      where: { id: placeId },
+    });
+    return true;
+  }
 }

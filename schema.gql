@@ -21,6 +21,7 @@ type ImageSignature {
 type Mutation {
   createImageSignature: ImageSignature!
   createPlace(input: PlaceInput!): Place
+  deletePlace(id: String!): Boolean!
   updatePlace(id: String!, input: PlaceInput!): Place
 }
 
@@ -44,7 +45,6 @@ input PlaceInput {
 }
 
 type Query {
-  hello: String!
   place(id: String!): Place
   places(bounds: BoundsInput!): [Place!]!
 }
