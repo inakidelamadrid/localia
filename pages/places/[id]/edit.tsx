@@ -35,6 +35,7 @@ export default function EditPlace() {
 }
 
 function PlaceData({ id }: { id: string }) {
+  const router = useRouter();
   const { user } = useAuth();
   const { data, loading } = useQuery<EditPlaceQuery, EditPlaceQueryVariables>(
     EDIT_PLACE_QUERY,
@@ -48,7 +49,16 @@ function PlaceData({ id }: { id: string }) {
   if (user.uid !== data?.place?.userId)
     return <Layout main={<div>You don't have permission</div>} />;
 
-  return <Layout main={<PlaceForm place={data.place} />} />;
+  return (
+    <Layout
+      main={
+        <PlaceForm
+          place={data.place}
+          onCancel={() => router.push(`/places/${id}`)}
+        />
+      }
+    />
+  );
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {

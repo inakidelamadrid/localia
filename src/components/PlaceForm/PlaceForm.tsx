@@ -6,11 +6,17 @@ import pick from 'lodash/pick';
 
 import { CREATE_PLACE_MUTATION, UPDATE_PLACE_MUTATION } from 'src/places';
 import { SearchBox } from 'src/components/SearchBox';
+import { Image } from 'src/components/Image';
 import { CreateSignatureMutation } from 'src/generated/CreateSignatureMutation';
 import {
   CreatePlaceMutation,
   CreatePlaceMutationVariables,
 } from 'src/generated/CreatePlaceMutation';
+
+import {
+  UpdatePlaceMutation,
+  UpdatePlaceMutationVariables,
+} from 'src/generated/UpdatePlaceMutation';
 import { SIGNATURE_MUTATION, uploadImage } from 'src/utils/cloudinary';
 
 interface IFormData {
@@ -71,6 +77,47 @@ export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel, place }) => {
     CreatePlaceMutationVariables
   >(CREATE_PLACE_MUTATION);
 
+  const [updatePlace] = useMutation<
+    UpdatePlaceMutation,
+    UpdatePlaceMutationVariables
+  >(UPDATE_PLACE_MUTATION);
+
+  const handleUpdate = async (currentPlace: IPlace, data: IFormData) => {
+    let image = currentPlace.image;
+
+    if (data.image[0]) {
+      const { data: signatureData } = await createSignature();
+      if (signatureData) {
+        const { signature, timestamp } = signatureData.createImageSignature;
+        const imageData = await uploadImage(
+          data.image[0],
+          signature,
+          timestamp
+        );
+        image = imageData.secure_url;
+      }
+    }
+
+    const { data: placeData } = await updatePlace({
+      variables: {
+        id: currentPlace.id,
+        input: {
+          address: data.address,
+          image: image,
+          coordinates: {
+            latitude: data.latitude ?? 0,
+            longitude: data.longitude ?? 0,
+          },
+          name: data.address,
+        },
+      },
+    });
+
+    if (placeData?.updatePlace) {
+      router.push(`/places/${currentPlace.id}`);
+    }
+  };
+
   const handleCreate = async (data: IFormData) => {
     const { data: signatureData } = await createSignature();
 
@@ -100,7 +147,7 @@ export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel, place }) => {
 
   const onFormSubmit = (data: IFormData) => {
     setSubmitting(true);
-    handleCreate(data);
+    place ? handleUpdate(place, data) : handleCreate(data);
   };
 
   useEffect(() => {
@@ -111,7 +158,7 @@ export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel, place }) => {
 
   const imageFormHandlers = register('image', {
     validate: (fileList: FileList) => {
-      if (fileList.length === 1) return true;
+      if (place || fileList.length === 1) return true;
       return 'Please upload one file';
     },
   });
@@ -135,7 +182,7 @@ export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel, place }) => {
       className="mx-auto max-w-xl py-4 space-y-4"
       onSubmit={handleSubmit(onFormSubmit)}
     >
-      <h1>Agrega tu negocio</h1>
+      <h1>{place ? `Editar ${place.name}` : 'Agrega tu negocio'}</h1>
       <div>
         <label className="block" htmlFor="search">
           Busca la direccion de tu negocio
@@ -146,7 +193,7 @@ export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel, place }) => {
             setValue('latitude', latitude);
             setValue('longitude', longitude);
           }}
-          defaultValue=""
+          defaultValue={place ? place.address : ''}
         />
         {errors.address && <p>{errors.address.message}</p>}
       </div>
@@ -168,13 +215,15 @@ export const PlaceForm: FC<IPlaceFormProps> = ({ onCancel, place }) => {
               {...imageFormHandlers}
               onChange={handleImageChange}
             />
-            {previewImage && (
+            {previewImage ? (
               <img
                 src={previewImage}
                 className="mt-4 object-cover"
                 style={{ width: '576px', height: `${(9 / 16) * 576}px` }}
               />
-            )}
+            ) : place ? (
+              <Image publicId={place.publicId} width={576} className="mt-4" />
+            ) : null}
             {errors.image && <p>{errors.image.message}</p>}
           </div>
 
