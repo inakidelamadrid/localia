@@ -29,10 +29,15 @@
 /* Stop purging. */
 
 /* Generics */
+/* All text will be warm-gray-900 */
+* {
+  color: #1c1917;
+}
 
-body {
-  background-color: rgba(17, 24, 39);
-  color: white;
+@layer components {
+  .nav-link {
+    @apply text-gray-50;
+  }
 }
 
 input {
